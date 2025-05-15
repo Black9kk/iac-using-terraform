@@ -11,9 +11,9 @@ on:
         required: true
         type: choice
         options:
-          - awseev/dev/env
-          - awseev/dev/group
-          - awseev/dev/singleton
+          - awsenv/dev/env
+          - awsenv/dev/group
+          - awsenv/dev/singleton
       environment:
         description: "Terraform environment"
         required: true
