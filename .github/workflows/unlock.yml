@@ -85,8 +85,12 @@ jobs:
         if: steps.extract_lock.outputs.lock_id == env.INPUT_LOCK_ID
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          echo "Lock ID matches input, force unlocking..."
-          terraform force-unlock -force "$INPUT_LOCK_ID"
+          echo "Lock ID matches input, attempting force unlock..."
+          if terraform force-unlock -force "$INPUT_LOCK_ID"; then
+            echo "✅ Unlock success"
+          else
+            echo "❌ Unlock failed"
+          fi
 
       - name: Skip Force Unlock (Lock ID doesn't match)
         if: steps.extract_lock.outputs.lock_id != env.INPUT_LOCK_ID

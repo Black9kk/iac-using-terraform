@@ -21,6 +21,17 @@ resource "aws_s3_bucket_versioning" "terraform_state_bucket_versioning" {
   }
 }
 
+
+resource "aws_s3_bucket" "dev01-waf-log-testing" {
+  bucket = "dev01-waf-log-testing" # Thay thế bằng tên bucket duy nhất của bạn
+
+  tags = {
+    Name        = "Terraform State Bucket"
+    Environment = "Dev"
+  }
+}
+
+
 resource "aws_dynamodb_table" "terraform_lock_table" {
   name         = "my-terraform-lock-table-dev" # Thay thế bằng tên bảng DynamoDB của bạn
   billing_mode = "PAY_PER_REQUEST"

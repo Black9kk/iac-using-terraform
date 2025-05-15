@@ -33,6 +33,17 @@ resource "aws_instance" "demo-instance" {
  vpc_security_group_ids = [data.aws_security_group.default.id]
 }
 
+resource "aws_instance" "demo-instance-2" {
+  ami                     = "ami-05ab12222a9f39021"
+  instance_type           = "t2.micro"
+  key_name                = aws_key_pair.udemy-keypair.key_name
+  tags = {
+    Name = "Udemy Demo"
+  }
+  vpc_security_group_ids = ["sg-06df41a900f2d3085"]
+}
+
+
 # Lấy VPC mặc định
 data "aws_vpc" "default" {
   default = true
