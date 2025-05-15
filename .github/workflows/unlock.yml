@@ -91,6 +91,7 @@ jobs:
           else
             echo "❌ Unlock failed"
           fi
+          rm -f plan_output.txt
 
       - name: Skip Force Unlock (Lock ID doesn't match)
         if: steps.extract_lock.outputs.lock_id != env.INPUT_LOCK_ID
