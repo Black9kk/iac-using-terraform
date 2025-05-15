@@ -68,6 +68,8 @@ jobs:
       - name: Init Terraform
         working-directory: ${{ env.WORKING_DIR }}
         run: |
+          pwd
+          ls -R
           terraform init
 
       - name: Select workspace
