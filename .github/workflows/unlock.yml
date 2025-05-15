@@ -77,7 +77,7 @@ jobs:
         id: tf_plan
         continue-on-error: true
         run: |
-          terraform plan -var-file="./$TF_VAR_FILE" -input=false -no-color 2>&1 | tee plan_output.txt
+          terraform plan -input=false -no-color > plan_output.txt 2>&1
           cat plan_output.txt
 
       - name: Debug Plan Output
@@ -91,7 +91,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           # Extract the Lock ID using grep/sed from plan output
-          LOCK_ID=$(grep -oP 'ID:\s*\K[a-f0-9-]+' plan_output.txt | head -n 1)
+          LOCK_ID=$(grep -oP 'ID:\s*\K[a-f0-9-]+' ${{ env.WORKING_DIR }}/plan_output.txt | head -n 1)
           echo "Detected LOCK_ID: $LOCK_ID"
           echo "lock_id=$LOCK_ID" >> "$GITHUB_OUTPUT"
 
