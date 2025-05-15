@@ -30,31 +30,23 @@ resource "aws_instance" "demo-instance" {
   tags = {
     Name = "Udemy Demo"
   }
-  vpc_security_group_ids = [ aws_security_group.test-security-group.id ]
+ vpc_security_group_ids = [data.aws_security_group.default.id]
 }
 
-resource "aws_security_group" "test-security-group" {
-  name        = "test-security-group"
-  description = "test-security-group"
+# Lấy VPC mặc định
+data "aws_vpc" "default" {
+  default = true
+}
 
-  ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+# Lấy security group mặc định của VPC đó
+data "aws_security_group" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
   }
 
-  ingress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+  filter {
+    name   = "group-name"
+    values = ["default"]
   }
 }
