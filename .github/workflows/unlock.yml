@@ -22,6 +22,9 @@ on:
           - dev01
           - dev02
           - prd01
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   force-unlock:
