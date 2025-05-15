@@ -43,16 +43,18 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (AssumeRole)
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials via Assume Role
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::123456789012:role/TerraformAccessRole
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::022269452713:role/GitHubActionsAthenaRole
+          role-duration-seconds: 1800
+          aws-region: ap-southeast-1
+          role-session-name: github-athena-session
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.7
+          terraform_version: 1.4.5
 
       - name: Init Terraform
         working-directory: ${{ env.WORKING_DIR }}
@@ -61,7 +63,7 @@ jobs:
 
       - name: Select workspace
         working-directory: ${{ env.WORKING_DIR }}
-        run: terraform workspace select "$ENVIRONMENT" || terraform workspace new "$ENVIRONMENT"
+        run: terraform workspace select "$ENVIRONMENT"
 
       - name: Terraform Plan (capture lock error)
         working-directory: ${{ env.WORKING_DIR }}
