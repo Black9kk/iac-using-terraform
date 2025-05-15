@@ -5,16 +5,18 @@ provider "aws" {
   region = "ap-southeast-1" # Thay thế bằng region mong muốn của bạn (ví dụ: us-east-1, eu-west-1)
 }
 
+
 # Cấu hình Backend S3
 terraform {
   backend "s3" {
-    bucket         = "black-dev-my-terraform-state-bucket-12345" # Thay thế bằng tên S3 bucket của bạn
-    key            = "ec2/terraform.tfstate"            # Đường dẫn file tfstate trong bucket
+    bucket         = "my-terraform-state-lock-dev" # Thay thế bằng tên S3 bucket của bạn
+    key            = "terraform.tfstate"            # Đường dẫn file tfstate trong bucket
     region         = "ap-southeast-1"                   # Thay thế bằng region của bucket S3
-    dynamodb_table = "my-terraform-lock-table"          # Thay thế bằng tên DynamoDB table của bạn
+    dynamodb_table = "my-terraform-lock-table-dev"          # Thay thế bằng tên DynamoDB table của bạn
     encrypt        = true                               # Mã hóa trạng thái trong S3
   }
 }
+
 
 resource "aws_key_pair" "udemy-keypair" {
   key_name   = "udemy-keypair"

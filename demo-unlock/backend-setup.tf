@@ -6,7 +6,7 @@
 # }
 
 resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket = "black-dev-my-terraform-state-bucket-12345" # Thay thế bằng tên bucket duy nhất của bạn
+  bucket = "my-terraform-state-lock-dev" # Thay thế bằng tên bucket duy nhất của bạn
 
   tags = {
     Name        = "Terraform State Bucket"
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_versioning" "terraform_state_bucket_versioning" {
 }
 
 resource "aws_dynamodb_table" "terraform_lock_table" {
-  name         = "my-terraform-lock-table" # Thay thế bằng tên bảng DynamoDB của bạn
+  name         = "my-terraform-lock-table-dev" # Thay thế bằng tên bảng DynamoDB của bạn
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
