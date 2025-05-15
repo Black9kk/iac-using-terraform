@@ -77,7 +77,7 @@ jobs:
         id: tf_plan
         continue-on-error: true
         run: |
-          terraform plan -var-file="$TF_VAR_FILE" -input=false -no-color > plan_output.txt 2>&1
+          terraform plan -var-file="./$TF_VAR_FILE" -input=false -no-color > plan_output.txt 2>&1 | tee plan_output.txt
           cat plan_output.txt
 
       - name: Debug Plan Output
