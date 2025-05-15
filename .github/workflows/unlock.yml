@@ -42,12 +42,6 @@ jobs:
       INPUT_LOCK_ID: ${{ github.event.inputs.lock_id }}
       TF_VAR_FILE: ${{ github.event.inputs.working_directory }}/tfvars/${{ github.event.inputs.environment }}.tfvars
 
-        echo "AWS_REGION=$AWS_REGION"
-        echo "ENVIRONMENT=$ENVIRONMENT"
-        echo "WORKING_DIR=$WORKING_DIR"
-        echo "INPUT_LOCK_ID=$INPUT_LOCK_ID"
-        echo "TF_VAR_FILE=$TF_VAR_FILE"
-
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -64,12 +58,14 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.4.5
+      - name: Check directory after checkout
+        run: |
+            pwd
+            ls -R
 
       - name: Init Terraform
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          pwd
-          ls -R
           terraform init
 
       - name: Select workspace
