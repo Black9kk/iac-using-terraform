@@ -31,10 +31,6 @@ jobs:
     name: Force Unlock Terraform State
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-
     env:
       AWS_REGION: ap-southeast-1
       ENVIRONMENT: ${{ github.event.inputs.environment }}
@@ -58,10 +54,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.4.5
-      - name: Check directory after checkout
-        run: |
-            pwd
-            ls -R
 
       - name: Init Terraform
         working-directory: ${{ env.WORKING_DIR }}
@@ -80,13 +72,6 @@ jobs:
           terraform plan -input=false -no-color > plan_output.txt 2>&1
           cat plan_output.txt
 
-      - name: Debug Plan Output
-        if: always()
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          pwd
-          echo "--- plan_output.txt ---"
-          cat plan_output.txt || echo "(file not found)"
       - name: Extract lock ID from error
         id: extract_lock
         working-directory: ${{ env.WORKING_DIR }}
