@@ -79,7 +79,7 @@ jobs:
           TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
   force-unlock:
     needs: get-lock-id
-    runs-on: devaws
+    runs-on: ubuntu-latest
     if: needs.get-lock-id.outputs.lock-id-plan == ${{ github.event.inputs.lock_id_input }}
     steps:
       - name: setup-terraform
