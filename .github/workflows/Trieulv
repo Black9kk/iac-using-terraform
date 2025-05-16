@@ -1,0 +1,215 @@
+name: Terraform force unlock - dev
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      working_directory:
+
+        description: "Working directory"
+
+        required: true
+
+        default: 'awsenv/dev/env'
+
+        type: choice
+
+        options:
+
+          - awsenv/dev/env
+
+          - awsenv/dev/group
+
+      tf_workspace:
+
+        description: 'Terraform workspace'
+
+        required: true
+
+        default: 'stg01'
+
+        type: choice
+
+        options:
+
+          - stg01
+
+          - dev01
+
+      lock_id_input:
+
+        description: 'Lock ID for unlock'
+
+        required: true
+
+jobs:
+
+  get-lock-id:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    outputs:
+
+      lock-id-plan: ${{ steps.terraform_plan.outputs.lock_id }}
+
+    steps:
+
+      - name: Clone repo
+
+        uses: actions/checkout@v2
+
+        with:
+
+          ref: develop_trainning
+
+
+
+      - name: Configure AWS credentials
+
+        uses: aws-actions/configure-aws-credentials@v2
+
+        with:
+
+          aws-region: ap-southeast-1
+
+          role-to-assume: arn:aws:iam::022269452713:role/GitHubActionsAthenaRole
+
+          role-session-name: GitHubActions
+
+      
+
+      - name: setup-node
+
+        uses: actions/setup-node@v2
+
+        with:
+
+          node-version: '18'
+
+
+
+      - name: setup-terraform
+
+        uses: hashicorp/setup-terraform@v2
+
+        with:
+
+          terraform_version: 1.4.5
+
+
+
+      - name: terraform init
+
+        id: init
+
+        run: terraform init -upgrade
+
+        working-directory: ${{ github.event.inputs.working_directory }}
+
+        env:
+
+          TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
+
+        
+
+      - name: terraform plan
+
+        id: terraform_plan
+
+        run: |
+
+          terraform plan -var-file="./tfvars/${{ github.event.inputs.tf_workspace }}.tfvars" -no-color -input=false 2>&1 | tee plan.log
+
+          lock_id=''
+
+
+
+          if grep -q "Lock Info:" plan.log; then
+
+            lock_id=$(grep -A 5 "Lock Info:" plan.log | grep "ID:" | awk '{print $2}')
+
+            lock_infor=$(awk '/Error acquiring the state lock/,/Created:/' plan.log)
+
+          
+
+            if [ -n "$lock_id" ]; then
+
+              echo "lock_id=$lock_id"
+
+              echo "-----LOCK INFO-----" >> $GITHUB_STEP_SUMMARY
+
+              echo "$lock_infor" >> $GITHUB_STEP_SUMMARY
+
+            else
+
+              echo "Lock ID not found in plan output." >> $GITHUB_STEP_SUMMARY
+
+            fi
+
+          else
+
+            echo "No state lock detected." >> $GITHUB_STEP_SUMMARY
+
+          fi
+
+          echo "lock_id" >> $GITHUB_OUTPUT
+
+
+
+        working-directory: ${{ github.event.inputs.working_directory }}
+
+        env:
+
+          TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
+
+
+
+  force-unlock:
+
+    needs: get-lock-id
+
+    runs-on: devaws
+
+    if: needs.get-lock-id.outputs.lock-id-plan == ${{ github.event.inputs.lock_id_input }}
+
+    steps:
+
+      - name: setup-terraform
+
+        uses: hashicorp/setup-terraform@v2
+
+        with:
+
+          terraform_version: 1.4.5
+
+
+
+      - name: terraform init
+
+        id: init
+
+        run: terraform init -upgrade
+
+        working-directory: ${{ github.event.inputs.working_directory }}
+
+        env:
+
+          TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
+
+
+
+      - name: Force unlock
+
+        run: terraform force-unlock -force ${{ github.event.inputs.lock_id_input }}
+
+        working-directory: ${{ github.event.inputs.working_directory }}
+
+        env:
+
+          TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
+
+    
