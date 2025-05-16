@@ -71,7 +71,9 @@ jobs:
           else
             echo "No state lock detected." >> $GITHUB_STEP_SUMMARY
           fi
-          echo "lock_id=$lock_id" >> "$GITHUB_OUTPUT"
+          # Đảm bảo không có ký tự đặc biệt
+          safe_lock_id=$(echo "$lock_id" | tr -d '\n\r')
+          echo "lock_id=$safe_lock_id" >> "$GITHUB_OUTPUT"
         working-directory: ${{ github.event.inputs.working_directory }}
         env:
           TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
