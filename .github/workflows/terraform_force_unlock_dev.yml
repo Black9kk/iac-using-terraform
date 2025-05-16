@@ -21,6 +21,9 @@ on:
       lock_id_input:
         description: 'Lock ID for unlock'
         required: true
+permissions:
+  id-token: write
+  contents: read
 jobs:
   get-lock-id:
     runs-on: ubuntu-latest
