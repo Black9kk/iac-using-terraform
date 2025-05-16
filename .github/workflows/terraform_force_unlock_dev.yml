@@ -63,6 +63,7 @@ jobs:
             lock_infor=$(awk '/Error acquiring the state lock/,/Created:/' plan.log)
             if [ -n "$lock_id" ]; then
               echo "lock_id=$lock_id"
+              echo "trieulv"
               echo "-----LOCK INFO-----" >> $GITHUB_STEP_SUMMARY
               echo "$lock_infor" >> $GITHUB_STEP_SUMMARY
             else
@@ -86,6 +87,8 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.4.5
+      - name: Clone repo
+        uses: actions/checkout@v2
       - name: terraform init
         id: init
         run: terraform init -upgrade
