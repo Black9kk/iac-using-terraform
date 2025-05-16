@@ -71,7 +71,7 @@ jobs:
           else
             echo "No state lock detected." >> $GITHUB_STEP_SUMMARY
           fi
-          echo "lock_id" >> $GITHUB_OUTPUT
+          echo "lock_id=$lock_id" >> $GITHUB_OUTPUT
         working-directory: ${{ github.event.inputs.working_directory }}
         env:
           TF_WORKSPACE: ${{ github.event.inputs.tf_workspace }}
